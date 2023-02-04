@@ -5,6 +5,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.challenge.hotel.DAO.HuespedDAO;
+import com.challenge.hotel.DAO.ReservaDAO;
 import com.challenge.hotel.controller.HuespedController;
 import com.challenge.hotel.controller.ReservaController;
 import com.challenge.hotel.factory.ConnectionFactory;
@@ -147,13 +149,13 @@ public class MenuPrincipal extends JFrame {
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				/* 
-				ReservaController reserva = new ReservaController();
-				reserva.LeerDatos();
 				
-				HuespedController huesped = new HuespedController();
-				huesped.LeerDatos();
-				*/
+				HuespedDAO husped = new HuespedDAO();
+				husped.leerHuespedes();
+				
+				//ReservaDAO reservad = new ReservaDAO();
+				//reservad.leerReservas();
+
 				Login login = new Login();
 				login.setVisible(true);
 				dispose();

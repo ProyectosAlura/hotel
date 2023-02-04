@@ -27,7 +27,7 @@ public class Exito extends JDialog {
 	public static void main(String[] args,int id) {
 		try {
 			Exito dialog = new Exito(id);
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -85,6 +85,11 @@ public class Exito extends JDialog {
 			}
 			{
 				JButton cancelButton = new JButton("Salir");
+				cancelButton.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						System.exit(0);						
+					}
+				});
 				cancelButton.setActionCommand("Salir");
 				buttonPane.add(cancelButton);
 			}
