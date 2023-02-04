@@ -128,6 +128,7 @@ public class MenuUsuario extends JFrame {
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				//Abrir menu 
 				Busqueda busqueda = new Busqueda();
 				busqueda.setVisible(true);
 				dispose();

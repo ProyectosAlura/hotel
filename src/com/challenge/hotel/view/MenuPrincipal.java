@@ -149,13 +149,7 @@ public class MenuPrincipal extends JFrame {
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				
-				HuespedDAO husped = new HuespedDAO();
-				husped.leerHuespedes();
-				
-				//ReservaDAO reservad = new ReservaDAO();
-				//reservad.leerReservas();
-
+				//Ir al login
 				Login login = new Login();
 				login.setVisible(true);
 				dispose();

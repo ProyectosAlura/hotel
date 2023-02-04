@@ -4,13 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import com.challenge.hotel.factory.ConnectionFactory;
 import com.challenge.hotel.model.Reserva;
 
 public class ReservaDAO {
 
-    public void leerReservas() {
+    public ArrayList<Reserva> leerReservas() {
+        ArrayList <Reserva> lista = new ArrayList<>();
         ConnectionFactory conexion = new ConnectionFactory();
 
         try (Connection con = conexion.conectar()) {
@@ -20,14 +22,24 @@ public class ReservaDAO {
 
                 try (ResultSet resultSet = statement.getResultSet()) {
                     while (resultSet.next()) {
+                        Reserva reserva = new Reserva(resultSet.getString("FECHA_ENTRADA"), resultSet.getString("FECHA_SALIDA"),
+                        resultSet.getDouble("VALOR"), resultSet.getString("FORMAPAGO"));
+
+                        reserva.setId(resultSet.getInt("ID"));
+                        
+                        lista.add(reserva);
+                        /* 
                         System.out.println("ID: " + resultSet.getInt("ID") + ",Fecha entrada: "
                                 + resultSet.getString("FECHA_ENTRADA") + ",Valor:" + resultSet.getDouble("VALOR")
                                 + ",forma de pago:" + resultSet.getString("FORMAPAGO"));
+                        */
                     }
+                    return lista;
                 } 
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
     }
 

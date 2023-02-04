@@ -241,6 +241,7 @@ public class Login extends JFrame {
 	        String contrase=new String (txtContrasena.getPassword());
 
 	        if(txtUsuario.getText().equals(Usuario) && contrase.equals(Contraseña)){
+				//Si el login es exitoso llama el menu
 	            MenuUsuario menu = new MenuUsuario();
 	            menu.setVisible(true);
 	            dispose();	 

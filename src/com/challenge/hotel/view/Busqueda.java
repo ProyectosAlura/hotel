@@ -3,8 +3,15 @@ package com.challenge.hotel.view;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+
+import com.challenge.hotel.controller.HuespedController;
+import com.challenge.hotel.controller.ReservaController;
+import com.challenge.hotel.model.Huesped;
+import com.challenge.hotel.model.Reserva;
+
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -14,7 +21,10 @@ import java.awt.SystemColor;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.awt.event.ActionEvent;
 import javax.swing.JTabbedPane;
 import java.awt.Toolkit;
@@ -79,7 +89,7 @@ public class Busqueda extends JFrame {
 		JLabel lblNewLabel_4 = new JLabel("SISTEMA DE BÚSQUEDA");
 		lblNewLabel_4.setForeground(new Color(12, 138, 199));
 		lblNewLabel_4.setFont(new Font("Roboto Black", Font.BOLD, 24));
-		lblNewLabel_4.setBounds(331, 62, 280, 42);
+		lblNewLabel_4.setBounds(331, 62, 300, 42);
 		contentPane.add(lblNewLabel_4);
 		
 		JTabbedPane panel = new JTabbedPane(JTabbedPane.TOP);
@@ -102,7 +112,21 @@ public class Busqueda extends JFrame {
 		modelo.addColumn("Valor");
 		modelo.addColumn("Forma de Pago");
 		
-		
+		Map <String,String> mapa = new HashMap<>();
+		mapa.put("reserva","1");
+		mapa.put("fi","2");
+		mapa.put("fo","3");
+		mapa.put("v","4");
+		mapa.put("fp","5");
+
+		ReservaController servicio = new ReservaController();
+		ArrayList<Reserva> lista = servicio.verReservas();
+
+		for(Reserva reserva:lista){
+			modelo.addRow(new Object[]{reserva.getId(),reserva.getFechaEntrada(),reserva.getFechaSalida(),
+			reserva.getValor(),reserva.getFORMAPAGO()});
+		}
+
 		tbHuespedes = new JTable();
 		tbHuespedes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tbHuespedes.setFont(new Font("Roboto", Font.PLAIN, 16));
@@ -116,6 +140,14 @@ public class Busqueda extends JFrame {
 		modeloH.addColumn("Telefono");
 		modeloH.addColumn("Numero de Reserva");
 		
+		HuespedController serviciohuesped= new HuespedController();
+		ArrayList<Huesped> listahuespedes = serviciohuesped.verHuespedes();
+		
+		for(Huesped huesped:listahuespedes){
+			modeloH.addRow(new Object[]{huesped.getId(),huesped.getNombre(),huesped.getApellido(),
+			huesped.getFechaNacimiento(),huesped.getNacionalidad(),huesped.getTelefono(),huesped.getIdReserva()});
+		}
+
 		JLabel lblNewLabel_2 = new JLabel("");
 		lblNewLabel_2.setIcon(new ImageIcon(Busqueda.class.getResource("../imagenes/Ha-100px.png")));
 		lblNewLabel_2.setBounds(56, 51, 104, 107);
@@ -211,7 +243,7 @@ public class Busqueda extends JFrame {
 		btnbuscar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-
+				//Logica para buscar
 			}
 		});
 		btnbuscar.setLayout(null);
