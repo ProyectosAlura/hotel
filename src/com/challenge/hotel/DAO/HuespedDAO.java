@@ -3,39 +3,33 @@ package com.challenge.hotel.DAO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-
 import com.challenge.hotel.factory.ConnectionFactory;
 import com.challenge.hotel.model.Huesped;
 
 public class HuespedDAO {
     
-    public ArrayList<Huesped> leerHuespedes(){
+    public ArrayList<Huesped> leerHuespedes() throws SQLException{
         ArrayList <Huesped> listaHuespedes = new ArrayList<>();
         ConnectionFactory conexion = new ConnectionFactory();
         try (Connection con = conexion.conectar()) {
             try(PreparedStatement statement = con.prepareStatement("SELECT ID,NOMBRE,APELLIDO,FECHA_DE_NACIMIENTO,NACIONALIDAD,TELEFONO,ID_RESERVA FROM TBHUESPEDES")){
                 boolean existeLista = statement.execute();
-                System.out.println(existeLista);
                 try( ResultSet resultSet = statement.getResultSet()){
                     while(resultSet.next()){
                         Huesped huesped = new Huesped(resultSet.getString("NOMBRE"), resultSet.getString("APELLIDO"),
                         resultSet.getString("FECHA_DE_NACIMIENTO"), resultSet.getString("NACIONALIDAD"), resultSet.getString("TELEFONO"), resultSet.getInt("ID_RESERVA"));
-                        /*System.out.println("ID: "+resultSet.getInt("ID")+",Nombre: "+resultSet.getString("NOMBRE")+",Apellido:"+resultSet.getString("APELLIDO")+",Fecha de nacimiento:"+resultSet.getString("FECHA_DE_NACIMIENTO")
-                        +"Nacionalidad:"+resultSet.getString("NACIONALIDAD")+",telefono:"+resultSet.getString("TELEFONO")+",#reserva:"+resultSet.getInt("ID_RESERVA"));*/
                         huesped.setId(resultSet.getInt("ID"));
                         listaHuespedes.add(huesped);
                     }
                     return listaHuespedes;
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return listaHuespedes;
         }
     }
 
-    public int crearHuesped(Huesped huesped){
+    public int crearHuesped(Huesped huesped) throws SQLException{
         ConnectionFactory conexion = new ConnectionFactory();
 
         try (Connection con = conexion.conectar()) {
@@ -55,9 +49,57 @@ public class HuespedDAO {
                     return huesped.getId();
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return -1;
+        }
+    }
+
+    public ArrayList<Huesped> buscarHuespedes(String valor) throws SQLException{
+        ArrayList <Huesped> listaHuespedes = new ArrayList<>();
+        ConnectionFactory conexion = new ConnectionFactory();
+        try (Connection con = conexion.conectar()) {
+            try(PreparedStatement statement = con.prepareStatement("SELECT * FROM TBHUESPEDES WHERE (APELLIDO=?)")){
+                statement.setString(1, valor);
+                boolean existeLista = statement.execute();
+                try( ResultSet resultSet = statement.getResultSet()){
+                    while(resultSet.next()){
+                        Huesped huesped = new Huesped(resultSet.getString("NOMBRE"), resultSet.getString("APELLIDO"),
+                        resultSet.getString("FECHA_DE_NACIMIENTO"), resultSet.getString("NACIONALIDAD"), resultSet.getString("TELEFONO"), resultSet.getInt("ID_RESERVA"));
+                        huesped.setId(resultSet.getInt("ID"));
+                        listaHuespedes.add(huesped);
+                    }
+                    return listaHuespedes;
+                }
+            }
+        } 
+    }
+    
+    public int modificarHuesped(Huesped huesped) throws SQLException{
+        ConnectionFactory conexion = new ConnectionFactory();
+        try (Connection con = conexion.conectar()) {
+            try(PreparedStatement statement = con.prepareStatement("UPDATE TBHUESPEDES SET NOMBRE=?,APELLIDO=?,FECHA_DE_NACIMIENTO=?,NACIONALIDAD=?,TELEFONO=?,ID_RESERVA=? WHERE ID= ?")){
+                statement.setString(1, huesped.getNombre());
+                statement.setString(2, huesped.getApellido());
+                statement.setString(3, huesped.getFechaNacimiento());
+                statement.setString(4, huesped.getNacionalidad());
+                statement.setString(5, huesped.getTelefono());
+                statement.setInt(6, huesped.getIdReserva());
+                statement.setInt(7, huesped.getId());
+                statement.execute();
+                
+                int registroAlterado = statement.getUpdateCount();
+                return registroAlterado;
+            }
+        } 
+    }
+
+    public int eliminarHuesped(int id) throws SQLException{
+        ConnectionFactory conexion = new ConnectionFactory();
+        try (Connection con = conexion.conectar()) {
+            try(PreparedStatement statement = con.prepareStatement("DELETE FROM TBHUESPEDES WHERE ID = ?")){
+                statement.setInt(1,id);
+                statement.execute();
+                int registroAlterado = statement.getUpdateCount();
+                return registroAlterado;
+            }
         }
     }
 }

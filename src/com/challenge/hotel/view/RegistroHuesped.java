@@ -9,6 +9,8 @@ import java.awt.Color;
 
 import com.challenge.hotel.controller.HuespedController;
 import com.challenge.hotel.model.Huesped;
+import com.challenge.hotel.validaciones.Fecha;
+import com.challenge.hotel.validaciones.ValidacionesHuesped;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -16,18 +18,11 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Font;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import java.awt.SystemColor;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.awt.event.ActionEvent;
 import java.awt.Toolkit;
 import javax.swing.SwingConstants;
 import javax.swing.JSeparator;
@@ -48,11 +43,10 @@ public class RegistroHuesped extends JFrame {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args, int reserva) {
+	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					RegistroHuesped frame = new RegistroHuesped(reserva);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -156,7 +150,7 @@ public class RegistroHuesped extends JFrame {
 		txtNacionalidad.setBounds(560, 350, 289, 36);
 		txtNacionalidad.setBackground(SystemColor.text);
 		txtNacionalidad.setFont(new Font("Roboto", Font.PLAIN, 16));
-		txtNacionalidad.setModel(new DefaultComboBoxModel(new String[] {"afgano-afgana", "alemán-", "alemana", "árabe-árabe", "argentino-argentina", "australiano-australiana", "belga-belga", "boliviano-boliviana", "brasileño-brasileña", "camboyano-camboyana", "canadiense-canadiense", "chileno-chilena", "chino-china", "colombiano-colombiana", "coreano-coreana", "costarricense-costarricense", "cubano-cubana", "danés-danesa", "ecuatoriano-ecuatoriana", "egipcio-egipcia", "salvadoreño-salvadoreña", "escocés-escocesa", "español-española", "estadounidense-estadounidense", "estonio-estonia", "etiope-etiope", "filipino-filipina", "finlandés-finlandesa", "francés-francesa", "galés-galesa", "griego-griega", "guatemalteco-guatemalteca", "haitiano-haitiana", "holandés-holandesa", "hondureño-hondureña", "indonés-indonesa", "inglés-inglesa", "iraquí-iraquí", "iraní-iraní", "irlandés-irlandesa", "israelí-israelí", "italiano-italiana", "japonés-japonesa", "jordano-jordana", "laosiano-laosiana", "letón-letona", "letonés-letonesa", "malayo-malaya", "marroquí-marroquí", "mexicano-mexicana", "nicaragüense-nicaragüense", "noruego-noruega", "neozelandés-neozelandesa", "panameño-panameña", "paraguayo-paraguaya", "peruano-peruana", "polaco-polaca", "portugués-portuguesa", "puertorriqueño-puertorriqueño", "dominicano-dominicana", "rumano-rumana", "ruso-rusa", "sueco-sueca", "suizo-suiza", "tailandés-tailandesa", "taiwanes-taiwanesa", "turco-turca", "ucraniano-ucraniana", "uruguayo-uruguaya", "venezolano-venezolana", "vietnamita-vietnamita"}));
+		txtNacionalidad.setModel(new DefaultComboBoxModel(new String[] {"afgano-afgana", "alemán-alemana", "árabe-árabe", "argentino-argentina", "australiano-australiana", "belga-belga", "boliviano-boliviana", "brasileño-brasileña", "camboyano-camboyana", "canadiense-canadiense", "chileno-chilena", "chino-china", "colombiano-colombiana", "coreano-coreana", "costarricense-costarricense", "cubano-cubana", "danés-danesa", "ecuatoriano-ecuatoriana", "egipcio-egipcia", "salvadoreño-salvadoreña", "escocés-escocesa", "español-española", "estadounidense-estadounidense", "estonio-estonia", "etiope-etiope", "filipino-filipina", "finlandés-finlandesa", "francés-francesa", "galés-galesa", "griego-griega", "guatemalteco-guatemalteca", "haitiano-haitiana", "holandés-holandesa", "hondureño-hondureña", "indonés-indonesa", "inglés-inglesa", "iraquí-iraquí", "iraní-iraní", "irlandés-irlandesa", "israelí-israelí", "italiano-italiana", "japonés-japonesa", "jordano-jordana", "laosiano-laosiana", "letón-letona", "letonés-letonesa", "malayo-malaya", "marroquí-marroquí", "mexicano-mexicana", "nicaragüense-nicaragüense", "noruego-noruega", "neozelandés-neozelandesa", "panameño-panameña", "paraguayo-paraguaya", "peruano-peruana", "polaco-polaca", "portugués-portuguesa", "puertorriqueño-puertorriqueño", "dominicano-dominicana", "rumano-rumana", "ruso-rusa", "sueco-sueca", "suizo-suiza", "tailandés-tailandesa", "taiwanes-taiwanesa", "turco-turca", "ucraniano-ucraniana", "uruguayo-uruguaya", "venezolano-venezolana", "vietnamita-vietnamita"}));
 		contentPane.add(txtNacionalidad);
 		
 		JLabel lblNombre = new JLabel("NOMBRE");
@@ -216,7 +210,7 @@ public class RegistroHuesped extends JFrame {
 		txtNreserva.setBackground(Color.WHITE);
 		//
 		txtNreserva.setEditable(false);
-		txtNreserva.setText(String.valueOf(reserva)); //Para id
+		txtNreserva.setText(String.valueOf(reserva)); //asignando el id
 		txtNreserva.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 		contentPane.add(txtNreserva);
 		
@@ -263,17 +257,18 @@ public class RegistroHuesped extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				//Logica para crear un Huesped
 
-				if(verificarFormulario()){ 
-					
-					Huesped huesped = new Huesped(txtNombre.getText().toLowerCase(), txtApellido.getText().toLowerCase(),formatearFecha(txtFechaN.getDate()),
+				if(ValidacionesHuesped.verificarFormulario(txtNombre, txtApellido, txtFechaN, txtNacionalidad, txtTelefono)){ 
+					//Crear Huesped
+					Huesped huesped = new Huesped(txtNombre.getText().toLowerCase().trim(), txtApellido.getText().toLowerCase().trim(),Fecha.formatearFecha(txtFechaN.getDate()),
 					String.valueOf(txtNacionalidad.getSelectedItem()), txtTelefono.getText(), reserva);
 					int idHuesped = new HuespedController().crearHuesped(huesped);
-					
-					System.out.println(idHuesped);
-
-					Exito completado = new Exito(idHuesped);
-					completado.setVisible(true);
-					dispose(); //cerrar ventana actual
+					if(idHuesped > 0){ //Si se crea exitosamente
+						Exito completado = new Exito(idHuesped);
+						completado.setVisible(true);
+						dispose(); //cerrar ventana actual
+					}else{
+						JOptionPane.showMessageDialog(null, "Fechas inválidas","Error",JOptionPane.ERROR_MESSAGE);
+					}
 				}
 			}
 		});
@@ -349,40 +344,5 @@ public class RegistroHuesped extends JFrame {
 	        int y = evt.getYOnScreen();
 	        this.setLocation(x - xMouse, y - yMouse);
 }
-	
-	private String formatearFecha(Date fecha) { // Devuelve la fecha en formato anho-mes-dia
-		String formato = new SimpleDateFormat("yyyy-MM-dd").format(fecha);
-		return formato;
-	}
-
-	private boolean verificarFormulario(){
-		//verificar que todo este lleno
-		if(!txtNombre.getText().isEmpty() && !txtApellido.getText().isEmpty() && txtFechaN.getDate() != null 
-		&& txtNacionalidad.getSelectedItem() != null && !txtTelefono.getText().isEmpty()){
-			System.out.println("Comprobado");
-			//verificar las condiciones de los campos
-			if(contieneSoloLetras(txtNombre.getText()) && contieneSoloLetras(txtApellido.getText()) 
-			&& contieneSoloNumeros(txtTelefono.getText())){
-				System.out.println("Comprobado Totalmente");
-				return true;
-			}else{
-				JOptionPane.showMessageDialog(null, "Datos invalidos \n - El telefono debe tener 10 digitos \n - Verifique nombre y apellido");
-			}
-		}else{
-			JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
-		}
-		return false;
-	}
-
-	private boolean contieneSoloLetras(String texto){
-		Pattern pattern = Pattern.compile("[a-zA-Z\u00C0-\u017F]+");
-		Matcher matcher = pattern.matcher(texto);
-		return matcher.matches();
-	}
-	private boolean contieneSoloNumeros(String texto){
-		Pattern pattern = Pattern.compile("[0-9]{10}");
-		Matcher matcher = pattern.matcher(texto);
-		return matcher.matches();
-	}
 											
 }

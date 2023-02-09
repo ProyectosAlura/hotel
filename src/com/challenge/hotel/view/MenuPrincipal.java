@@ -5,12 +5,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.challenge.hotel.DAO.HuespedDAO;
-import com.challenge.hotel.DAO.ReservaDAO;
-import com.challenge.hotel.controller.HuespedController;
-import com.challenge.hotel.controller.ReservaController;
-import com.challenge.hotel.factory.ConnectionFactory;
-
 import java.awt.Panel;
 import java.awt.Color;
 import java.awt.SystemColor;
@@ -22,9 +16,11 @@ import javax.swing.SwingConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.sql.Connection;
-import java.sql.SQLException;
 
+/***
+ * @author Daniel Caro
+ * @version 1.0
+ */
 @SuppressWarnings("serial")
 public class MenuPrincipal extends JFrame {
 
@@ -52,7 +48,6 @@ public class MenuPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public MenuPrincipal() {
-		//setIconImage(Toolkit.getDefaultToolkit().getImage(MenuPrincipal.class.getResource("./imagenes/aH-40px.png")));
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MenuPrincipal.class.getResource("../imagenes/aH-40px.png")));
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 910, 537);

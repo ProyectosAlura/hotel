@@ -13,6 +13,8 @@ import javax.swing.JTextField;
 
 import com.challenge.hotel.controller.ReservaController;
 import com.challenge.hotel.model.Reserva;
+import com.challenge.hotel.validaciones.Fecha;
+import com.challenge.hotel.validaciones.ValidacionesReserva;
 import com.toedter.calendar.JDateChooser;
 
 import java.awt.Font;
@@ -122,8 +124,10 @@ public class ReservasView extends JFrame {
 		txtFechaE.addPropertyChangeListener(new PropertyChangeListener() {
 
 			public void propertyChange(PropertyChangeEvent evt) {
-				// Activa el evento, después del usuario seleccionar las fechas se debe calcular
-				verificarCampo(txtFechaS);
+				// Activa el evento y calcula el costo
+				if(txtFechaS!=null){
+					verificarCampo(txtFechaS);
+				}	
 			}
 		});
 		panel.add(txtFechaE);
@@ -158,8 +162,10 @@ public class ReservasView extends JFrame {
 		txtFechaS.setFont(new Font("Roboto", Font.PLAIN, 18));
 		txtFechaS.addPropertyChangeListener(new PropertyChangeListener() {
 			public void propertyChange(PropertyChangeEvent evt) {
-				// Activa el evento, después del usuario seleccionar las fechas se debe calcular
-				verificarCampo(txtFechaE);
+				// Activa el evento, y calcula el costo
+				if(txtFechaE != null ){
+					verificarCampo(txtFechaE);
+				}
 			}
 		});
 		txtFechaS.setDateFormatString("yyyy-MM-dd");
@@ -228,6 +234,8 @@ public class ReservasView extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				MenuPrincipal principal = new MenuPrincipal();
 				principal.setVisible(true);
+				txtFechaE=null;
+				txtFechaS=null;
 				dispose();
 			}
 
@@ -261,7 +269,6 @@ public class ReservasView extends JFrame {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				headerMouseDragged(e);
-
 			}
 		});
 		header.addMouseListener(new MouseAdapter() {
@@ -280,6 +287,8 @@ public class ReservasView extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				MenuUsuario usuario = new MenuUsuario();
 				usuario.setVisible(true);
+				txtFechaE=null;
+				txtFechaS=null;
 				dispose();
 			}
 
@@ -320,24 +329,25 @@ public class ReservasView extends JFrame {
 					// Enviar datos a la BD
 					
 					//verificar campos
-					if (verificarFecha(txtFechaE.getDate(), txtFechaS.getDate()) && valor>1) {
-						String fechaEntrada = formatearFecha(txtFechaE.getDate());
-						String fechaSalida = formatearFecha(txtFechaS.getDate());
+					if (Fecha.verificarFecha(txtFechaE.getDate(), txtFechaS.getDate()) && valor>1) {
+						String fechaEntrada = Fecha.formatearFecha(txtFechaE.getDate()); //Obtener datos de los campos
+						String fechaSalida = Fecha.formatearFecha(txtFechaS.getDate());
 						String metodoDePago = String.valueOf(txtFormaPago.getSelectedItem());
 
 						//Crear reserva
 						Reserva reserva = new Reserva(fechaEntrada, fechaSalida, valor,metodoDePago);
 						ReservaController objReserva = new ReservaController();
 						int idReserva = objReserva.crearReserva(reserva); //Obtener id
-
-						JOptionPane.showMessageDialog(null, "Reserva generada correctamente \n El id generado es: "+idReserva);
-
-						//abrir registro de huesped
-						RegistroHuesped registro = new RegistroHuesped(idReserva);
-						registro.setVisible(true);
-						dispose();
+						if(idReserva > 0){ //si se completa correctamente la query
+							JOptionPane.showMessageDialog(null, "Reserva creada correctamente \n El id generado es: "+idReserva);
+							//abrir registro de huesped
+							RegistroHuesped registro = new RegistroHuesped(idReserva); //Abrir ventana registroHuesped
+							registro.setVisible(true);
+							dispose();
+						}
+						
 					}else{
-						JOptionPane.showMessageDialog(null, "Fechas no válidas");
+						JOptionPane.showMessageDialog(null, "Fechas inválidas","Error",JOptionPane.ERROR_MESSAGE);
 					}
 				} else {
 					JOptionPane.showMessageDialog(null, "Debes llenar todos los campos.");
@@ -371,56 +381,16 @@ public class ReservasView extends JFrame {
 		this.setLocation(x - xMouse, y - yMouse);
 	} // JDateChooser fecha
 
-	private String formatearFecha(Date fecha) { // Devuelve la fecha en formato anho-mes-dia
-		String formato = new SimpleDateFormat("yyyy-MM-dd").format(fecha);
-		return formato;
-	}
+	//Funciones 
 
-	// Devuelve booleano dependiendo si la fecha de entrada es o no menor a la fecha
-	// de salida
-	private boolean verificarFecha(Date fechaEntrada, Date fechaSalida) {
-		String fechaActual = formatearFecha(new Date()); // fecha y hora actual
-		SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd");
-		Date fechaActualFormateada;
-		try {
-			fechaActualFormateada = formato.parse(fechaActual);
-			int compE = fechaEntrada.compareTo(fechaActualFormateada);
-			int compS = fechaSalida.compareTo(fechaActualFormateada);
-		if (compE >= 0 && compS >= 0) { // si la fecha es mayor o igual a la fecha actual
-			if ((fechaEntrada != null && fechaSalida != null)) {
-				int res = fechaEntrada.compareTo(fechaSalida); // si es menor devuelve -1, si es igual devuelve 0
-				if (res < 0) {
-					return true;
-				}
-			}
-		}
-		return false;
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
-	}
 
-	private double calcularCosto(Date fechaEntrada, Date fechaSalida) {
-		if (verificarFecha(fechaEntrada, fechaSalida)) {
-			//
-			LocalDate fechaentrada = LocalDate.parse(formatearFecha(fechaEntrada));
-			LocalDate fechasalida = LocalDate.parse(formatearFecha(fechaSalida));
-			long fe = ChronoUnit.DAYS.between(fechaentrada, fechasalida); // Calcular los dias
-			if (fe > 0) { // se cobra el costo de un dia
-				double res = 50000 * fe;
-				return res;
-			}
-		} else {
-			JOptionPane.showMessageDialog(null, "fecha inválida");
-		}
-		return -1.0;
-	}
-
+	/**
+	 * Calcula el costo de la reserva y la muestra en el campo
+	 * @param fecha
+	 */
 	private void verificarCampo(JDateChooser fecha){ //Mustra en pantalla el costo
 		if (fecha.getDate() != null) {
-			valor = calcularCosto(txtFechaE.getDate(), txtFechaS.getDate()); 
+			valor = ValidacionesReserva.calcularCosto(txtFechaE.getDate(), txtFechaS.getDate()); 
 			if (valor >= 0) {
 				txtValor.setText("$" + valor + " COP");
 			} else {
