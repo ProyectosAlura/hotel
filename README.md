@@ -4,7 +4,7 @@
 En este proyecto se realiza una aplicación de gestion de reservas para un hotel,
 mediante java y la base de datos MYSQL.
 
-***
+
 
 <section>
     <h2>índice</h2>
@@ -16,7 +16,7 @@ mediante java y la base de datos MYSQL.
     </ul>
 </section> 
 
-***
+
 
 <section id="funcionalidad">
     <h2> 💡Funcionalidades</h2>
@@ -41,11 +41,9 @@ mediante java y la base de datos MYSQL.
 </section> 
 
 
-***
-
 <section id="Ejecutar proyecto">
-    <h2>🚀 Ejecutar Proyecto</h2>
-    Para ejecutar el proyecto, clone el repositorio o descargue el zip del proyecto.
+    <h2>🚀 Descargar Proyecto</h2>
+    Para descargar el proyecto, clone el repositorio o descargue el zip del proyecto.
 </section> 
 
 ***
